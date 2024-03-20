@@ -8,10 +8,28 @@
 </head>
 <body class="bg-dark" data-bs-theme="dark">
     <div class="d-flex">
-        <textarea class="form-control" rows="30" autocomplete="off"></textarea>
-        <textarea class="form-control" rows="30" autocomplete="off" readonly></textarea>
+        <textarea class="form-control" rows="30" autocomplete="off" spellcheck="false" id="userInput"></textarea>
+        <div contenteditable="true" class="form-control" rows="30" autocomplete="off" spellcheck="false" id="codeOutput" readonly></div>
     </div>
     <br/>
-    <button type="button" class="btn btn-primary">Generate comments &rarr;</button>
+    <button type="button" class="btn btn-primary" id="submitButton" onclick="submitCode()">Generate comments &rarr;</button>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        function submitCode() {
+            const userInput = document.getElementById('userInput').value;
+            let submitButton = document.getElementById('submitButton');
+            submitButton.disabled = true;
+            let inputField = document.getElementById('userInput');
+            inputField.disabled = true;
+            let formData = new FormData();
+            formData.append('userInput', userInput);
+            fetch('/generatecomments', {method: 'POST', body: formData})
+            .then(response => response.text()).then(data => {
+                let outputField = document.getElementById('codeOutput');
+                outputField.innerHTML = data;
+                inputField.disabled = false;
+                submitButton.disabled = false;
+            }).catch(error => {console.error('Error: ', error);});
+        }
+    </script>
 </body>
