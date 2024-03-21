@@ -18,27 +18,39 @@
         </div>
     </nav>
     <div class="d-flex">
-        <textarea class="form-control" rows="30" autocomplete="off" spellcheck="false" id="userInput"></textarea>
-        <div class="form-control" rows="30" autocomplete="off" spellcheck="false" id="codeOutput"></div>
+        <div style="display: flex; justify-content: left; flex-direction:column; flex-basis:50%; max-height: 100vh; min-width:50vw; gap:10px">
+            <textarea class="form-control" rows="30" autocomplete="off" spellcheck="false" id="userInput" style="max-height: calc(90vh - 60px);"></textarea>
+            <button type="button" class="btn btn-primary" id="submitButton" onclick="submitCode()" style="max-width:25vw">Generate comments &rarr;</button>
+        </div>
+        <div style="display: flex; justify-content: left; flex-direction:column; flex-basis:50%; max-height: 100vh; min-width:50vw; gap:10px">
+            <div class="form-control" rows="30" autocomplete="off" spellcheck="false" id="codeOutput" style="max-height: calc(90vh - 60px); min-height: calc(90vh - 60px); overflow:auto;"></div>
+            <button type="button" class="btn btn-primary" id="downloadButton" onclick="downloadCode()" style="max-width:25vw" disabled>Download comments &darr;</button>
+            <pre style="display:none;" id="rawOutput"></pre>
+        </div>
     </div>
     <br/>
-    <button type="button" class="btn btn-primary" id="submitButton" onclick="submitCode()">Generate comments &rarr;</button>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
         function submitCode() {
             const userInput = document.getElementById('userInput').value;
             let submitButton = document.getElementById('submitButton');
+            let outputField = document.getElementById('codeOutput');
+            let outputRaw = document.getElementById('rawOutput');
             submitButton.disabled = true;
             let inputField = document.getElementById('userInput');
             inputField.disabled = true;
             let formData = new FormData();
             formData.append('userInput', userInput);
             fetch('/generatecomments', {method: 'POST', body: formData})
-            .then(response => response.text()).then(data => {
-                let outputField = document.getElementById('codeOutput');
-                outputField.innerHTML = data;
+            .then(response => response.json()).then(data => {
+                let downloadButton = document.getElementById("downloadButton");
+                outputRaw.textContent = data[1];
+                console.log(outputRaw.textContent);
+                outputField.innerHTML = data[0];
                 inputField.disabled = false;
                 submitButton.disabled = false;
+                downloadButton.disabled = false;
             }).catch(error => {console.error('Error: ', error);});
         }
         function handleModelSelect(model) {
@@ -49,5 +61,18 @@
                 location.reload();
             }).catch(error => {console.error('Error: ', error);});
         }
+        function downloadCode() {
+            const code = document.getElementById('rawOutput').textContent;
+            const blob = new Blob([code], {type:'text/markdown;charset=utf-8'});
+            const downloadAnchor = document.createElement('a');
+            const downloadURL = URL.createObjectURL(blob);
+            downloadAnchor.href = downloadURL;
+            downloadAnchor.download = "output.md";
+
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+
+            document.body.removeChild(downloadAnchor);
+        }       
     </script>
 </body>
