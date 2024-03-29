@@ -50,13 +50,13 @@ End Goal: Your expertise and input are highly valued, aiming to significantly el
     submittedCode = request.form.get('userInput')
     formattedInput = {"role": "user", "content": submittedCode}
     messages.append(formattedInput)
-    completion = openai_client.chat.completions.create(model=session['current_model'], messages=messages, max_tokens=4096, temperature=0.65)
+    completion = openai_client.chat.completions.create(model=session['current_model'], messages=messages, max_tokens=app.config['MAX_TOKENS'], temperature=app.config['TEMPERATURE'])
     response = [completion.choices[0].message.content]
     if app.debug:
         print(f"Sent {completion.usage.prompt_tokens} tokens and received {completion.usage.completion_tokens} tokens back")
     while completion.choices[0].finish_reason == "length":
         messages.append({"role": "assistant", "content": response[-1]})
-        completion = openai_client.chat.completions.create(model=session['current_model'], messages=messages, max_tokens=4096, temperature=0.65)
+        completion = openai_client.chat.completions.create(model=session['current_model'], messages=messages, max_tokens=app.config['MAX_TOKENS'], temperature=app.config['TEMPERATURE'])
         response.append(completion.choices[0].message.content)
         if app.debug:
             print(f"Sent {completion.usage.prompt_tokens} tokens and received {completion.usage.completion_tokens} tokens back")
