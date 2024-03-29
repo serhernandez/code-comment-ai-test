@@ -62,7 +62,7 @@ End Goal: Your expertise and input are highly valued, aiming to significantly el
             print(f"Sent {completion.usage.prompt_tokens} tokens and received {completion.usage.completion_tokens} tokens back")
     formatted_resp = markdown.markdown("".join(response), extensions=['codehilite', 'fenced_code'])
     
-    return jsonify([formatted_resp, response])
+    return jsonify([formatted_resp, "".join(response)])
 
 @app.route("/selectmodel", methods=['PUT'])
 def change_model():
