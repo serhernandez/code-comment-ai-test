@@ -20,16 +20,48 @@ def generate_comments():
         "You are an AI Assistant who will be helping developers understand code. The user will provide code that they would like you to explain, providing clarification for what various libraries and function calls are doing. Please keep explanations simple enough for programmers of all levels to understand, and don't include any extra comments unrelated to the program being explained.",
         "You are an AI Assistant who will be helping developers understand code. The user will provide code that they would like you to explain, providing clarification for what various libraries and function calls are doing. Please keep explanations simple enough for programmers of all levels to understand, and don't include any extra comments unrelated to the program being explained. If possible, please include these comments as annotations to the code itself so the user can reference the explanations as well as the relevant code easily.",
         "You are an AI Assistant who will be helping developers understand code. The user will provide code that they would like you to explain, providing clarification for what various libraries and function calls are doing. Please keep explanations simple enough for programmers of all levels to understand, and don't include any extra comments unrelated to the program being explained. Please include explanations as comments added to the code itself, so that the user can follow along with explanations while also seeing the code being referenced.",
+        """I have a Python codebase that is part of a banking management system, involving various functionalities like database management, account operations, and user authentication. The codebase uses SQLite for database operations and includes multiple functions for managing customers, employees, and administrative tasks.
+Objective: I'm seeking an in-depth review and complete documentation of this codebase. The goal is to enhance clarity, efficiency, and maintainability, ensuring it aligns with best practices. The documentation should be detailed, covering every function, and formatted in Markdown for readability.
+Requirements:
+1.	Overview Creation:
+o	Provide a succinct summary of the codebase, highlighting its primary functions and the problems it addresses.
+2.	Code Review Components:
+o	Efficiency Analysis: Identify any code inefficiencies or redundancies and propose specific optimizations.
+o	Clarity Assessment: Evaluate code readability and structure. Offer suggestions for improving clarity, including better naming conventions or necessary refactoring.
+o	Error Handling Evaluation: Examine the code's approach to error handling and robustness. Pinpoint potential failure points and recommend improvements.
+3.	Documentation Enhancement Criteria:
+o	Libraries and Dependencies: List and describe all external libraries or dependencies, emphasizing their roles within the code.
+o	Function Documentation: For each function, provide:
+-	Name
+-	Purpose: A brief description of its functionality.
+-	Parameters: Detail each parameter, including type and a short description.
+-	Return Values: Specify the return types and their significance.
+-	Exceptions/Errors: List any potential exceptions or errors raised.
+-	Include simple usage examples where applicable.
+o	Global Variables Documentation: Describe any global variables, explaining their purposes and interactions within the code.
+4.	Additional Guidelines:
+o	The documentation should be thorough, addressing all outlined aspects to support future development and enhance maintainability.
+o	Should any code sections require clarification or further explanation, immediate communication is encouraged.
+Format: Please format the documentation in Markdown to ensure it is well-organized and easy to navigate.
+End Goal: Your expertise and input are highly valued, aiming to significantly elevate the quality and comprehensibility of our codebase through structured and comprehensive documentation.
+""",
     ]
-    messages = [{"role": "system", "content": sysprompts[5]}]
+    messages = [{"role": "system", "content": sysprompts[6]}]
     submittedCode = request.form.get('userInput')
     formattedInput = {"role": "user", "content": submittedCode}
     messages.append(formattedInput)
     completion = openai_client.chat.completions.create(model=session['current_model'], messages=messages, max_tokens=4096)
-    response = completion.choices[0].message.content
-    formatted_resp = markdown.markdown(response, extensions=['codehilite', 'fenced_code'])
+    response = [completion.choices[0].message.content]
     if app.debug:
         print(f"Sent {completion.usage.prompt_tokens} tokens and received {completion.usage.completion_tokens} tokens back")
+    while completion.choices[0].finish_reason == "length":
+        messages.append({"role": "assistant", "content": response[-1]})
+        completion = openai_client.chat.completions.create(model=session['current_model'], messages=messages, max_tokens=4096, temperature=0.65)
+        response.append(completion.choices[0].message.content)
+        if app.debug:
+            print(f"Sent {completion.usage.prompt_tokens} tokens and received {completion.usage.completion_tokens} tokens back")
+    formatted_resp = markdown.markdown("".join(response), extensions=['codehilite', 'fenced_code'])
+    
     return jsonify([formatted_resp, response])
 
 @app.route("/selectmodel", methods=['PUT'])
