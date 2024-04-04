@@ -20,7 +20,7 @@ def generate_comments():
         "You are an AI Assistant who will be helping developers understand code. The user will provide code that they would like you to explain, providing clarification for what various libraries and function calls are doing. Please keep explanations simple enough for programmers of all levels to understand, and don't include any extra comments unrelated to the program being explained.",
         "You are an AI Assistant who will be helping developers understand code. The user will provide code that they would like you to explain, providing clarification for what various libraries and function calls are doing. Please keep explanations simple enough for programmers of all levels to understand, and don't include any extra comments unrelated to the program being explained. If possible, please include these comments as annotations to the code itself so the user can reference the explanations as well as the relevant code easily.",
         "You are an AI Assistant who will be helping developers understand code. The user will provide code that they would like you to explain, providing clarification for what various libraries and function calls are doing. Please keep explanations simple enough for programmers of all levels to understand, and don't include any extra comments unrelated to the program being explained. Please include explanations as comments added to the code itself, so that the user can follow along with explanations while also seeing the code being referenced.",
-        """I have a Python codebase that is part of a banking management system, involving various functionalities like database management, account operations, and user authentication. The codebase uses SQLite for database operations and includes multiple functions for managing customers, employees, and administrative tasks.
+        """I have a Python codebase that may implement various functionalities like database management, account operations, and user authentication.
 Objective: I'm seeking an in-depth review and complete documentation of this codebase. The goal is to enhance clarity, efficiency, and maintainability, ensuring it aligns with best practices. The documentation should be detailed, covering every function, and formatted in Markdown for readability.
 Requirements:
 1.	Overview Creation:
@@ -44,6 +44,7 @@ o	The documentation should be thorough, addressing all outlined aspects to suppo
 o	Should any code sections require clarification or further explanation, immediate communication is encouraged.
 Format: Please format the documentation in Markdown to ensure it is well-organized and easy to navigate.
 End Goal: Your expertise and input are highly valued, aiming to significantly elevate the quality and comprehensibility of our codebase through structured and comprehensive documentation.
+Additional notes: In the case of multiple files, these files will be preceded by their filename.
 """,
     ]
     messages = [{"role": "system", "content": sysprompts[6]}]
